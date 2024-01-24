@@ -106,3 +106,63 @@ app.get("/verify/:token", async (req, res) => {
     return res.status(500).message({ message: "Email verification failed" });
   }
 });
+
+const generateSecretKey = () => {
+  const secretKey = crypto.randomBytes(32).toString("hex");
+  return secretKey;
+};
+
+const secretKey = generateSecretKey();
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email" });
+    }
+
+    if (user.password !== password) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    const token = jwt.sign({ userId: user._id }, secretKey);
+
+    return res.status(200).json({ token });
+  } catch (error) {
+    console.log("Error on login", error);
+    return res.status(500).json({ message: "Log in failed" });
+  }
+});
+
+app.put("/users/:userId/gender", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { gender } = req.body;
+
+    console.log(userId);
+    console.log(gender);
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { gender },
+      { new: true }
+    );
+
+    console.log(user);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "user gender updating succesfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error updating user gender", error });
+  }
+});

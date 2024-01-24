@@ -35,15 +35,7 @@ const register = () => {
         console.log(response);
         Alert.alert(
           "Resistration Succesfull",
-          "you have been registerd successfully",
-          [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            { text: "OK", onPress: () => console.log("OK Pressed") },
-          ]
+          "you have been registerd successfully"
         );
         setEmail("");
         setName("");

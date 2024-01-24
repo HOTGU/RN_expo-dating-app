@@ -9,14 +9,32 @@ import {
   Pressable,
 } from "react-native";
 import React, { useState } from "react";
+import axios from "axios";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+
+  const handleLogin = () => {
+    const user = { email, password };
+
+    axios
+      .post("http://localhost:3000/login", user)
+      .then((response) => {
+        console.log(response);
+        const token = response.data.token;
+        AsyncStorage.setItem("auth", token);
+        router.replace("/(authenticate)/select");
+      })
+      .catch((error) => {
+        console.log();
+      });
+  };
 
   return (
     <SafeAreaView
@@ -101,6 +119,7 @@ const login = () => {
               onChangeText={(text) => setEmail(text)}
               placeholder="Email"
               placeholderTextColor={"white"}
+              autoCapitalize="none"
               style={{
                 color: "white",
                 marginVertical: 10,
@@ -133,6 +152,7 @@ const login = () => {
               value={password}
               onChangeText={(text) => setPassword(text)}
               secureTextEntry
+              autoCapitalize="none"
               placeholder="Enter your password"
               placeholderTextColor={"white"}
               style={{
@@ -160,6 +180,7 @@ const login = () => {
         <View style={{ marginTop: 50 }} />
 
         <Pressable
+          onPress={handleLogin}
           style={{
             width: 200,
             backgroundColor: "#ffc0cb",
