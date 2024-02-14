@@ -7,8 +7,9 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Pressable,
+  Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
@@ -20,19 +21,29 @@ const login = () => {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userId = await AsyncStorage.getItem("auth");
+      if (userId) {
+        router.replace("/(tabs)/bio");
+      }
+    };
+    fetchUser();
+  }, []);
+
   const handleLogin = () => {
     const user = { email, password };
 
     axios
       .post("http://localhost:3000/login", user)
       .then((response) => {
-        console.log(response);
         const token = response.data.token;
         AsyncStorage.setItem("auth", token);
         router.replace("/(authenticate)/select");
       })
       .catch((error) => {
-        console.log();
+        console.log("Error on login client", error);
+        Alert.alert("Log in failed");
       });
   };
 

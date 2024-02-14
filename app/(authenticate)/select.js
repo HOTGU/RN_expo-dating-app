@@ -27,7 +27,6 @@ const select = () => {
         `http://localhost:3000/users/${userId}/gender`,
         { gender: option }
       );
-      console.log(response.data);
 
       if (response.status === 200) {
         router.replace("/(tabs)/bio");
